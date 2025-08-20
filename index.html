@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday • Start</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --pink1:#ffd1e8; --pink2:#ff9ac2; --card:#fff; --text:#2b2b2b; --brand:#7c3aed;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; height:100svh; display:grid; place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:#222; overflow:hidden;
+      background:
+        radial-gradient(circle at 20% -10%, rgba(255,255,255,.9), transparent 35%),
+        linear-gradient(180deg, #ffe0ef 0%, #ffb6d6 40%, #ff9ac2 100%);
+    }
+    /* subtle pattern */
+    body::before{
+      content:""; position:fixed; inset:0; opacity:.15; pointer-events:none;
+      background-image: url("assets/pattern.png");
+      background-size: 300px;
+    }
+    .btn{background:var(--brand); color:#fff; border:none; padding:.8rem 1.2rem; border-radius:12px; cursor:pointer; font-weight:600}
+    .btn:active{transform:translateY(1px)}
+    /* modal */
+    .overlay{position:fixed; inset:0; display:grid; place-items:center; background:rgba(0,0,0,.25); animation:fade .25s}
+    .card{
+      width:min(92vw,440px); background:var(--card); color:var(--text);
+      border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,.15);
+      padding:22px; text-align:center; transform:translateY(10px); animation:pop .25s forwards;
+    }
+    .circle{margin:14px auto 10px; height:56px; width:56px; border-radius:50%;
+      background:conic-gradient(from 0turn, #ffc, #fcf, #cff, #ffc); filter:saturate(1.1); animation:spin 2s linear infinite;
+      display:grid; place-items:center;
+    }
+    .circle::after{content:"🎉"; font-size:26px; animation:none}
+    input{
+      width:100%; padding:.8rem 1rem; border-radius:12px; border:1px solid #e5e7eb; outline:none;
+      font-size:1rem; margin:8px 0 14px;
+      background:#fafafa;
+    }
+    label{display:block; font-size:.95rem; color:#444; margin:6px 0 8px}
+    @keyframes fade{from{opacity:0}to{opacity:1}}
+    @keyframes pop{to{transform:translateY(0)}}
+    @keyframes spin{to{transform:rotate(1turn)}}
+    .credit{position:fixed; bottom:10px; left:50%; transform:translateX(-50%); font-size:.8rem; opacity:.6}
+  </style>
+</head>
+<body>
+  <div class="overlay" role="dialog" aria-modal="true">
+    <div class="card">
+      <div class="circle" aria-hidden="true"></div>
+      <h2 style="margin:.2rem 0 0">Yay!</h2>
+      <p style="margin:.25rem 0 1rem; color:#555">And here comes another birthday surprise for you!</p>
+
+      <label for="name">What's your beautiful name?</label>
+      <input id="name" type="text" placeholder="e.g. Nidhi" autofocus />
+      <button id="go" class="btn">OK</button>
+    </div>
+  </div>
+
+  <div class="credit">Made with ❤️ for someone special</div>
+
+  <script>
+    const input = document.getElementById('name');
+    const go = document.getElementById('go');
+
+    function proceed(){
+      const name = (input.value || "").trim() || "Friend";
+      localStorage.setItem('hb_name', name);
+      // optional: preload a tiny sound on user gesture
+      location.href = "message.html";
+    }
+    go.addEventListener('click', proceed);
+    input.addEventListener('keydown', e => { if(e.key === 'Enter') proceed(); });
+  </script>
+</body>
+</html>

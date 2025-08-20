@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday • Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{ --bg1:#ffffff; --bg2:#f6f7fb; --text:#37b4e8; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; height:100svh; overflow:hidden;
+      background: radial-gradient(900px 300px at 50% 30%, #f0f4ff 0, transparent 65%),
+                  radial-gradient(1200px 600px at 50% 120%, #eef2ff 0, #ffffff 55%);
+      display:grid; place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    .stage{
+      width:min(100vw,1200px); height:min(86svh,820px);
+      display:grid; place-items:center; perspective:1200px;
+      position:relative;
+    }
+    .ring{
+      position:absolute; width:700px; height:700px; transform-style:preserve-3d;
+      animation:spin 20s linear infinite;
+      filter: drop-shadow(0 20px 35px rgba(0,0,0,.12));
+    }
+    @keyframes spin { to{ transform: rotateY(1turn); } }
+
+    .panel{
+      position:absolute; top:50%; left:50%; transform-style:preserve-3d;
+      width:220px; height:300px; margin:-150px -110px;
+      border-radius:14px; overflow:hidden; background:#fff;
+      box-shadow:0 25px 60px rgba(0,0,0,.18);
+      transition:transform .3s;
+    }
+    .panel img{ width:100%; height:100%; object-fit:cover; display:block; }
+    /* soft reflection under each panel */
+    .panel::after{
+      content:""; position:absolute; left:0; right:0; bottom:-28px; height:28px; border-radius:50%;
+      background:radial-gradient(closest-side, rgba(0,0,0,.18), rgba(0,0,0,0));
+      filter:blur(6px);
+    }
+
+    /* center text plate */
+    .plate{
+      position:absolute; width:360px; height:360px; border-radius:50%;
+      background: radial-gradient(circle at 50% 40%, #ffffff, #f3f7ff);
+      display:grid; place-items:center; text-align:center;
+      box-shadow: inset 0 10px 40px rgba(0,0,0,.06),
+                  0 20px 70px rgba(0,0,0,.08);
+      transform: translateZ(-80px) rotateX(60deg);
+    }
+    .plate h1{
+      margin:0; color:var(--text); line-height:1.1;
+      text-shadow: 0 3px 0 rgba(0,0,0,.05);
+      font-size: clamp(28px, 4.2vw, 46px);
+      transform: rotateX(-60deg); /* make text upright */
+      font-weight:900;
+    }
+
+    /* responsive tweaks */
+    @media (max-width: 900px){
+      .ring{ width:520px; height:520px }
+      .panel{ width:170px; height:230px; margin:-115px -85px }
+      .plate{ width:300px; height:300px; }
+    }
+    @media (max-width: 640px){
+      .ring{ width:420px; height:420px }
+      .panel{ width:140px; height:190px; margin:-95px -70px }
+      .plate{ width:260px; height:260px }
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="plate"><h1 id="centerText">Happy Birthday</h1></div>
+    <div id="ring" class="ring"></div>
+  </div>
+
+  <script>
+    // read name
+    const name = localStorage.getItem('hb_name') || "Friend";
+    document.getElementById('centerText').innerHTML = `Happy<br>Birthday<br>${name}!`;
+
+    // photos list — replace with your own
+    const photos = [
+      "assets/photos/photo1.jpg",
+      "assets/photos/photo2.jpg",
+      "assets/photos/photo3.jpg",
+      "assets/photos/photo4.jpg",
+      "assets/photos/photo5.jpg",
+      "assets/photos/photo6.jpg",
+      "assets/photos/photo7.jpg",
+      "assets/photos/photo8.jpg",
+      "assets/photos/photo9.jpg",
+      "assets/photos/photo10.jpg",
+    ];
+
+    const ring = document.getElementById('ring');
+    const count = photos.length;
+    const radius = 290; // distance from center
+
+    // create panels spaced evenly around a circle
+    photos.forEach((src, i) => {
+      const a = (i / count) * Math.PI * 2;
+      const panel = document.createElement('div');
+      panel.className = 'panel';
+      panel.style.transform = `rotateY(${a}rad) translateZ(${radius}px) rotateX(10deg)`;
+      panel.innerHTML = `<img src="${src}" alt="photo ${i+1}">`;
+      ring.appendChild(panel);
+    });
+
+    // optional mouse drag to look around
+    let dragging=false, startX=0, rot=0, speed=0.005;
+    ring.addEventListener('mousedown', e=>{dragging=true; startX=e.clientX;});
+    window.addEventListener('mouseup', ()=>dragging=false);
+    window.addEventListener('mousemove', e=>{
+      if(!dragging) return;
+      const dx = e.clientX - startX; startX = e.clientX;
+      rot += dx * speed;
+      ring.style.animation = 'none';
+      ring.style.transform = `rotateY(${rot}rad)`;
+    });
+    // tap to pause/play rotation on mobile
+    ring.addEventListener('click', ()=>{
+      if (ring.style.animation === 'none') ring.style.animation = 'spin 20s linear infinite';
+      else ring.style.animation = 'none';
+    });
+  </script>
+</body>
+</html>

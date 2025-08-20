@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Happy Birthday • Message</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{ --card:#1f1f1f; --muted:#ffd1e8; --accent:#ff7ab6; --ink:#fff; --chip:#ffecf5; }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100svh; display:flex; flex-direction:column; align-items:center;
+      background:
+        radial-gradient(1000px 350px at 50% -10%, #ffe6f2 0, rgba(255,230,242,0) 70%),
+        linear-gradient(180deg, #ffd4e7 0%, #ff9ac2 100%);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      overflow-x:hidden;
+    }
+    /* header */
+    .top{
+      margin-top:28px; text-align:center;
+      display:flex; flex-direction:column; align-items:center; gap:10px;
+    }
+    .avatar{
+      height:110px; width:110px; border-radius:50%;
+      background:#fff8fb; display:grid; place-items:center;
+      box-shadow:0 10px 30px rgba(0,0,0,.15);
+      position:relative; isolation:isolate;
+    }
+    .avatar::after{
+      content:""; position:absolute; inset:-8px; border-radius:inherit; z-index:-1;
+      background:radial-gradient(circle at 50% 30%, #fff5fb, transparent 60%),
+                 conic-gradient(from .2turn, #ffd1e8, #fff, #ffd1e8);
+      filter:blur(8px); opacity:.7;
+    }
+    .title{margin:0; font-weight:700}
+    .chip{
+      background:var(--chip); color:#7a1a47; padding:.35rem .6rem; border-radius:999px; font-weight:600; font-size:.9rem;
+      display:inline-flex; align-items:center; gap:.4rem;
+    }
+
+    /* message card */
+    .card{
+      width:min(92vw,640px);
+      background:#2a2a2a; color:var(--ink);
+      margin:26px 0 12px; border-radius:18px; padding:18px 18px 22px;
+      box-shadow:0 24px 80px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      position:relative;
+    }
+    .card::before{
+      content:""; position:absolute; left:16px; top:16px; height:12px; width:12px;
+      background:#ff7ab6; border-radius:50%; box-shadow:0 0 18px #ff7ab6aa;
+    }
+    .msg{line-height:1.6; min-height:4lh; white-space:pre-wrap}
+    .cta{
+      margin-top:14px; display:flex; justify-content:center;
+    }
+    .btn{
+      background:#8b5cf6; color:#fff; border:none; padding:.9rem 1.1rem; border-radius:12px; cursor:pointer; font-weight:700;
+      box-shadow:0 10px 30px rgba(139,92,246,.35);
+    }
+    .btn:active{transform:translateY(1px)}
+    /* confetti bits */
+    .confetti{position:fixed; width:10px; height:10px; top:-10px; pointer-events:none}
+    @keyframes fall{to{transform:translateY(110svh) rotate(1turn); opacity:.2}}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <div class="avatar" aria-hidden="true">🐼</div>
+    <h2 class="title">Happy Birthday, <span id="name">Friend</span>!</h2>
+    <div class="chip">💗 With love & best wishes</div>
+  </div>
+
+  <div class="card">
+    <div id="text" class="msg"></div>
+    <div class="cta"><button id="surprise" class="btn">Tap here for your birthday surprise 🎁</button></div>
+  </div>
+
+  <!-- Music will start only after user clicks the button (for autoplay rules) -->
+  <audio id="music" loop>
+    <!-- Replace with your own mp3 -->
+    <source src="assets/music.mp3" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    // Get name
+    const name = localStorage.getItem('hb_name') || "Friend";
+    document.getElementById('name').textContent = name;
+
+    // Typewriter message
+    const lines = [
+      "Do you know what makes today extra special?",
+      "It's your birthday! 🎉",
+      `Today, I wish you a year filled with laughter, love, and unforgettable moments, ${name}.`,
+      "You deserve every happiness in the world. 💖"
+    ];
+    const el = document.getElementById('text');
+    let i=0, j=0;
+
+    function type() {
+      if (i < lines.length) {
+        const line = lines[i];
+        if (j <= line.length) {
+          el.textContent = lines.slice(0, i).join('\\n\\n') + (i? '\\n\\n' : '') + line.slice(0,j);
+          j++;
+          setTimeout(type, 25); // typing speed
+        } else {
+          i++; j=0;
+          setTimeout(type, 400);
+        }
+      }
+    }
+    type();
+
+    // Confetti on click + go to gallery
+    const btn = document.getElementById('surprise');
+    const music = document.getElementById('music');
+    btn.addEventListener('click', async () => {
+      // start music if available
+      try { await music.play(); } catch(e){}
+      burstConfetti();
+      setTimeout(()=> location.href = 'gallery.html', 1400);
+    });
+
+    function burstConfetti(){
+      const colors = ['#ff577f','#ffd166','#06d6a0','#118ab2','#9b5de5','#f15bb5'];
+      const n = 120;
+      for(let k=0;k<n;k++){
+        const p = document.createElement('div');
+        p.className = 'confetti';
+        p.style.left = (Math.random()*100) + 'vw';
+        p.style.background = colors[Math.floor(Math.random()*colors.length)];
+        p.style.transform = `translateY(-10px) rotate(${Math.random()}turn)`;
+        p.style.animation = `fall ${2 + Math.random()*1.5}s linear forwards`;
+        p.style.width = p.style.height = (6 + Math.random()*8) + 'px';
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(), 3500);
+      }
+    }
+  </script>
+</body>
+</html>
